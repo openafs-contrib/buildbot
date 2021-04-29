@@ -1,0 +1,9 @@
+.*
+!.gitignore
+*.retry
+ansible.cfg
+*.tar.gz
+*.pyc
+__pycache__/
+.cache/
+docs/build/

@@ -1,0 +1,19 @@
+---
+- name: "Install buildbot master control script."
+  template:
+    src: buildbotctl.j2
+    dest: "{{ buildbot_master_bin }}/buildbotctl"
+    mode: "755"
+
+- name: "Create the reboot cron entry."
+  cron:
+    name: "Start the buildbot master on reboot."
+    special_time: reboot
+    job: "{{ buildbot_master_bin }}/buildbotctl start"
+
+- name: "Create the watchdog cron entry."
+  cron:
+    name: "Ensure the buildbot master is running."
+    special_time: hourly
+    job: "{{ buildbot_master_bin }}/buildbotctl start"
+  when: buildbot_master_watchdog | d('yes') | bool

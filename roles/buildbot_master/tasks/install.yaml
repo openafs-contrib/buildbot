@@ -1,0 +1,61 @@
+---
+#
+# Install Buildbot.
+#
+
+- name: "Install required packages."
+  become: yes
+  yum:
+    state: present
+    name:
+      - gcc
+      - make
+      - patch
+      - python3
+      - python-setuptools
+  when:
+    - ansible_os_family == 'RedHat'
+    - buildbot_master_have_sudo | d('no') | bool
+
+- name: "Create local directories."
+  file:
+    state: directory
+    path: "{{ item.path }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - path: ".local/bin"
+      mode: "0755"
+    - path: "{{ buildbot_master_basedir }}"
+      mode: "0755"
+
+# First, install the latest version of pip in the virtual env,
+# which is needed to fix issues with various packages.
+- name: "Create Python virtual environment."
+  pip:
+    state: latest
+    name: pip
+    virtualenv: "{{ buildbot_master_venv }}"
+    virtualenv_command: "{{ buildbot_master_python }} -m venv"
+
+- name: "Install buildbot with pip."
+  pip:
+    name:
+      - "SQLAlchemy{{ buildbot_master_sqlalchemy_version }}"
+      - "buildbot[bundle]{{ buildbot_master_buildbot_version }}"
+    virtualenv: "{{ buildbot_master_venv }}"
+    virtualenv_command: "{{ buildbot_master_python }} -m venv"
+
+- name: "Create symlink to buildbot command"
+  file:
+    state: link
+    src: "{{ buildbot_master_venv }}/bin/buildbot"
+    path: "{{ buildbot_master_buildbot_command }}"
+
+# Apply bug fix for gerrit issue. For more information see:
+# - https://github.com/buildbot/buildbot/issues/5190
+# - https://github.com/buildbot/buildbot/pull/5219/commits
+- name: "Apply patches"
+  patch:
+    src: buildbot-issue-5190.patch
+    basedir: "{{ buildbot_master_venv }}/lib/python3.6/site-packages/buildbot"
+  when: buildbot_master_patch | d('yes') | bool

@@ -1,0 +1,53 @@
+---
+# Buildbot project name.
+buildbot_project: myproject
+
+# Buildbot master home directory.
+buildbot_master_home: "{{ ansible_user_dir }}"
+
+# Buildbot master bin directory.
+buildbot_master_bin: "{{ ansible_user_dir }}/.local/bin"
+
+# Buildbot command.
+buildbot_master_buildbot_command: "{{ buildbot_master_bin }}/buildbot"
+
+# Buildbot master pid file. This pidfile can be created by the master.cfg,
+# to workaround stale twistd.pid file problems.
+buildbot_master_pidfile: /tmp/buildbot_master.pid
+
+# Set to false (no) if sudo is not available.  This can be used in cases where
+# the system packages have been manually installed and ansible is used install
+# buildbot and manage the configuration.
+buildbot_master_have_sudo: "no"
+
+# Set to false (no) to disable installation.  This can be used in cases where
+# the buildbot has been manually installed and ansible is used to manage the
+# configuration.
+buildbot_master_install: "yes"
+
+# The buildbot master base directory.
+buildbot_master_basedir: "{{ buildbot_master_home }}/master/{{ buildbot_project }}"
+
+# The python interpreter used to run the buildbot master.
+buildbot_master_python: "/usr/bin/python3"
+
+# The path to the python virtual env to install the buildbot.
+buildbot_master_venv: "{{ buildbot_master_home }}/.venv/buildbot"
+
+# SQLAlchemy pip version specifier, e.g., '==1.3.17'
+buildbot_master_sqlalchemy_version: ''
+
+# Buildbot pip version specifier, e.g., '==2.8.2'
+buildbot_master_buildbot_version: ''
+
+# List of master config files.
+buildbot_master_config_files: ['master.cfg']
+
+# The master web interface URL.
+buildbot_master_url: "http://{{ ansible_default_ipv4.address }}/"
+
+# The master web interface port.
+buildbot_master_www_port: 8010
+
+# Run an hourly check to ensure the buildbot master process is running.
+buildbot_master_watchdog: yes

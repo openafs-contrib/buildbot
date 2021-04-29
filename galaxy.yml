@@ -1,0 +1,19 @@
+namespace: openafs_contrib
+name: buildbot
+version: 1.0.0
+readme: README.md
+authors:
+  - Michael Meffie <mmeffie@sinenomine.net>
+description: Deploy and manage buildbot master and workers
+license: BSD-2-Clause
+tags:
+  - buildbot
+build_ignore:
+  - .gitignore
+  - .venv
+  - builds
+  - tools
+  - roles/*/.env.yml
+  - roles/*/.tests
+  - roles/*/.cache
+repository: 'https://github.com/openafs-contrib/buildbot'
