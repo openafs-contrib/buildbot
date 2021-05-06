@@ -23,8 +23,6 @@ provisioner:
     host_vars:
       m-bot:
         buildbot_project: test
-        buildbot_master_host: 'localhost'
-        buildbot_master_port: 9989
         buildbot_worker_name: testbot
         buildbot_worker_password: secret
         buildbot_worker_admin: "tycobb@yoyodyne.com"

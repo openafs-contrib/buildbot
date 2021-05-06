@@ -40,6 +40,9 @@ buildbot_master_sqlalchemy_version: ''
 # Buildbot pip version specifier, e.g., '==2.8.2'
 buildbot_master_buildbot_version: ''
 
+# Buildbot master port number.
+buildbot_master_port: 9989
+
 # List of master config files.
 buildbot_master_config_files: []
 
