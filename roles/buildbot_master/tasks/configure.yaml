@@ -10,18 +10,10 @@
     state: absent
 
 - name: "Install the buildbot master configuration."
-  copy:
+  template:
     src: "{{ item }}"
     dest: "{{ buildbot_master_basedir }}/{{ item | basename }}"
   loop: "{{ buildbot_master_config_files }}"
-  # Note: We restart on configuration change for now since reloading
-  #       has been found to break the gerrit integration in the past.
-  notify: "restart buildbot master"
-
-- name: "Install the buildbot master site specific settings."
-  template:
-    src: "settings.py.j2"
-    dest: "{{ buildbot_master_basedir }}/settings.py"
   # Note: We restart on configuration change for now since reloading
   #       has been found to break the gerrit integration in the past.
   notify: "restart buildbot master"
