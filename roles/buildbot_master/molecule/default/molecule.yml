@@ -1,0 +1,26 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+platforms:
+  - name: m-buildbot-master
+    box: generic/centos7
+    groups:
+      - openafs_buildbot_masters
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_VERBOSITY: 0
+    ANSIBLE_STDOUT_CALLBACK: yaml
+  inventory:
+    group_vars:
+      openafs_buildbot_masters:
+        buildbot_project: test
+        buildbot_master_install: yes
+        buildbot_master_have_sudo: yes
+        buildbot_master_patch: no
+        buildbot_master_config_files:
+          - ${MOLECULE_SCENARIO_DIRECTORY}/files/master.cfg
+verifier:
+  name: ansible

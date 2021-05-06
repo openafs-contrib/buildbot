@@ -1,0 +1,33 @@
+---
+dependency:
+  name: galaxy
+
+driver:
+  name: vagrant
+
+platforms:
+  - name: m-bot
+    box: generic/centos8
+    groups:
+      - openafs_buildbot_workers
+
+provisioner:
+  name: ansible
+  playbooks:
+    converge: ../default/converge.yml
+    verify: ../default/verify.yml
+  inventory:
+    group_vars:
+      all:
+        ansible_shell_allow_world_readable_temp: true
+    host_vars:
+      m-bot:
+        buildbot_project: test
+        buildbot_master_host: 'localhost'
+        buildbot_master_port: 9989
+        buildbot_worker_name: testbot
+        buildbot_worker_password: secret
+        buildbot_worker_admin: "tycobb@yoyodyne.com"
+
+verifier:
+  name: ansible

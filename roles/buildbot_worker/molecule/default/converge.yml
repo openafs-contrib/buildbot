@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include buildbot_worker"
+      include_role:
+        name: "buildbot_worker"
