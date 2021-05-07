@@ -46,11 +46,5 @@ buildbot_master_port: 9989
 # List of master config files.
 buildbot_master_config_files: []
 
-# The master web interface URL.
-buildbot_master_url: "http://{{ ansible_default_ipv4.address }}/"
-
-# The master web interface port.
-buildbot_master_www_port: 8010
-
 # Run an hourly check to ensure the buildbot master process is running.
 buildbot_master_watchdog: yes
