@@ -13,7 +13,7 @@ BASEDIR="{{ buildbot_master_basedir }}"
 PIDFILE="{{ buildbot_master_pidfile }}"
 
 usage() {
-    echo "usage: buildbotctl start|stop|status|reload|restart" >&2
+    echo "usage: buildbotctl start|stop|status|checkconfig|reload|restart" >&2
     exit 1
 }
 
@@ -77,6 +77,11 @@ status() {
     fi
 }
 
+# Check configuration.
+checkconfig() {
+    $BUILDBOT checkconfig $BASEDIR
+}
+
 # Reload the buildbot master configuration.
 reload() {
     local pid=$(getpid)
@@ -103,6 +108,9 @@ stop)
     ;;
 status)
     status
+    ;;
+checkconfig)
+    checkconfig
     ;;
 reload)
     lock
