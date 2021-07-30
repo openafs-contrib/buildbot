@@ -32,8 +32,6 @@
 
 - name: "Create buildbot base directory"
   become: yes
-  become_method: sudo
-  become_user: buildbot
   file:
     state: directory
     path: "{{ buildbot_worker_basedir }}"
