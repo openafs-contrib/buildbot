@@ -41,7 +41,6 @@ install: build
 
 clean:
 	rm -rf builds
-	$(MAKE) -C tests clean
 
 distclean: clean
 	rm -rf .venv
