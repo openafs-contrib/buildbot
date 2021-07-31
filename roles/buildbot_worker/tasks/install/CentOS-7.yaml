@@ -7,12 +7,13 @@
     update_cache: yes
   tags: root
 
-# The c compiler is required to build the twisted modules.
-- name: "CentOS-7: Install python3 and gcc"
+# A c compiler is required to build the twisted modules.
+- name: "CentOS-7: Install packages"
   become: yes
   yum:
     state: present
     name:
+     - python-pip
      - python3
      - make
      - gcc
