@@ -74,35 +74,39 @@
 #    Using world-readable permissions for temporary files Ansible needs to
 #    create when becoming an unprivileged user.
 - name: "Create configuration staging directory"
+  become: yes
   file:
     state: directory
-    path: "{{ ansible_user_dir }}/.ansible/buildbot_worker"
+    path: ".ansible/buildbot_worker"
 
 - name: "Stage the worker host info"
+  become: yes
   copy:
     content: >
       {{ ansible_distribution }}
       {{ ansible_distribution_version }}
       {{ ansible_machine }}
-    dest: "{{ ansible_user_dir }}/.ansible/buildbot_worker/host"
+    dest: ".ansible/buildbot_worker/host"
 
 - name: "Stage the worker admin info"
+  become: yes
   copy:
     content: >
       {{ buildbot_worker_admin }}
-    dest: "{{ ansible_user_dir }}/.ansible/buildbot_worker/admin"
+    dest: ".ansible/buildbot_worker/admin"
 
 - name: "Stage the worker access uri"
+  become: yes
   copy:
     content: >
       ssh://{{ ansible_fqdn }}
-    dest: "{{ ansible_user_dir }}/.ansible/buildbot_worker/access_uri"
+    dest: ".ansible/buildbot_worker/access_uri"
 
 - name: "Install buildbot worker info files"
   become: yes
   copy:
     remote_src: yes
-    src: "{{ ansible_user_dir }}/.ansible/buildbot_worker/{{ item }}"
+    src: ".ansible/buildbot_worker/{{ item }}"
     dest: "{{ buildbot_worker_basedir }}/info/{{ item }}"
     owner: "{{ buildbot_user.uid }}"
     group: "{{ buildbot_user.group }}"
