@@ -13,18 +13,36 @@
   yum:
     state: present
     name:
-     - python-pip
      - python3
      - make
      - gcc
   tags: root
 
-- name: "CentOS-7: Install buildbot worker"
+# Install the buildbot-worker in a python virtualenv.  A recent pip is required
+# to workaround the new rust requirements imposed by the crypto team (thanks for
+# that).  This is not easy to do with the pip module, so we fallback to using a
+# series of shell commands.  The command 'creates' arg is specified for
+# idempotentcy.
+- name: "CentOS-7: Create python virtualenv for buildbot-worker"
   become: yes
-  pip:
-    name: buildbot-worker
-    virtualenv: /opt/buildbot-worker
-    virtualenv_command: /usr/bin/python3 -m venv
+  command:
+    cmd: /usr/bin/python3 -m venv /opt/buildbot-worker
+    creates: /opt/buildbot-worker
+  tags: root
+
+- name: "CentOS-7: Upgrade python pip in the buildbot-worker virtualenv"
+  become: yes
+  command:
+    cmd: /opt/buildbot-worker/bin/pip3 install -U pip
+    # Upgrade pip if we are going to install the buildbot packages.
+    creates: /opt/buildbot-worker/lib/python3.6/site-packages/buildbot_worker
+  tags: root
+
+- name: "CentOS-7: Install buildbot-worker"
+  become: yes
+  command:
+    cmd: /opt/buildbot-worker/bin/pip3 install buildbot-worker
+    creates: /opt/buildbot-worker/lib/python3.6/site-packages/buildbot_worker
   tags: root
 
 - name: "CentOS-7: Set buildbot-worker path"
