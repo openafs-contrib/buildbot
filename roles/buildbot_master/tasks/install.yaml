@@ -45,6 +45,7 @@
     virtualenv: "{{ buildbot_master_venv }}"
     virtualenv_command: "{{ buildbot_master_python }} -m venv"
   register: pip_install_results
+  notify: "restart buildbot master"
 
 - name: "Create symlink to buildbot command"
   file:
@@ -75,3 +76,4 @@
   when:
     - buildbot_master_patch | d('yes') | bool
     - buildbot_master_installed_version is version('2.8.4', '<')
+  notify: "restart buildbot master"
