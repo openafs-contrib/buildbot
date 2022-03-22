@@ -52,6 +52,8 @@ start() {
     if [ ! -z "$pid" ]; then
         echo "buildbot master is already running (pid $pid)"
     else
+        echo "Upgrading buildbot database"
+        $BUILDBOT upgrade-master $BASEDIR
         echo "Starting buildbot ..."
         BUILDBOT_PIDFILE=$PIDFILE $BUILDBOT start --start_timeout=60 $BASEDIR
     fi
