@@ -1,6 +1,6 @@
 ---
 # The c compiler is required to build the twisted modules.
-- name: "Fedora-31: Install python3 and gcc"
+- name: "Fedora: Install python3 and gcc"
   become: yes
   yum:
     state: present
@@ -10,7 +10,7 @@
      - gcc
   tags: root
 
-- name: "Fedora-31: Install buildbot worker"
+- name: "Fedora: Install buildbot worker"
   become: yes
   pip:
     name: buildbot-worker
@@ -18,11 +18,11 @@
     virtualenv_command: /usr/bin/python3 -m venv
   tags: root
 
-- name: "Fedora-31: Set buildbot-worker path"
+- name: "Fedora: Set buildbot-worker path"
   set_fact:
     buildbot_worker_bin: /usr/bin/buildbot-worker
 
-- name: "Fedora-31: Create buildbot-worker symlink"
+- name: "Fedora: Create buildbot-worker symlink"
   become: yes
   file:
     state: link
