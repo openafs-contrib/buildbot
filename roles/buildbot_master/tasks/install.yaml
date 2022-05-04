@@ -17,6 +17,16 @@
     - ansible_os_family == 'RedHat'
     - buildbot_master_have_sudo | d('no') | bool
 
+- name: "Install required packages."
+  become: yes
+  apt:
+    state: present
+    name:
+      - python3-venv
+  when:
+    - ansible_os_family == 'Debian'
+    - buildbot_master_have_sudo | d('no') | bool
+
 - name: "Create local directories."
   file:
     state: directory
