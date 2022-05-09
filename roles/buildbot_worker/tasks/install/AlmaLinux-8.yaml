@@ -18,12 +18,20 @@
      - gcc
   tags: root
 
+- name: "AlmaLinux-8: Create python virtual env"
+  become: yes
+  pip:
+    name: pip
+    state: latest
+    virtualenv: /opt/buildbot-worker
+    virtualenv_command: /usr/bin/python3 -m venv
+  tags: root
+
 - name: "AlmaLinux-8: Install buildbot worker"
   become: yes
   pip:
     name: buildbot-worker
     virtualenv: /opt/buildbot-worker
-    virtualenv_command: /usr/bin/python3 -m venv
   tags: root
 
 - name: "AlmaLinux-8: Set buildbot-worker path"
