@@ -48,7 +48,7 @@ buildbot_master_buildbot_version: ''
 buildbot_master_port: 9989
 
 # List of master config files.
-buildbot_master_config_files: []
+buildbot_master_config_templates: "{{ buildbot_master_config_files | d([]) }}"
 
 # Run an hourly check to ensure the buildbot master process is running.
 buildbot_master_watchdog: yes
