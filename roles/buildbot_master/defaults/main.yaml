@@ -2,6 +2,10 @@
 # Buildbot project name.
 buildbot_project: myproject
 
+# Buildbot master user and group.
+buildbot_master_user: "{{ ansible_user }}"
+buildbot_master_group: "{{ ansible_user }}"
+
 # Buildbot master home directory.
 buildbot_master_home: "{{ ansible_user_dir }}"
 

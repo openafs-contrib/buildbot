@@ -1,0 +1,13 @@
+[Unit]
+Description=BuildBot master service
+After=network.target
+
+[Service]
+User={{ buildbot_master_user }}
+Group={{ buildbot_master_group }}
+WorkingDirectory={{ buildbot_master_basedir }}
+ExecStart={{ buildbot_master_buildbot_command }} start --nodaemon
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

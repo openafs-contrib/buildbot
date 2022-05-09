@@ -1,10 +1,14 @@
 ---
-- name: "Reload the buildbot master."
-  listen: "reload buildbot master"
-  command:
-    cmd: "{{ buildbot_master_bin }}/buildbotctl reload"
-
-- name: "Restart the buildbot master."
-  listen: "restart buildbot master"
+- name: "Restart the buildbot master instance."
+  listen: "restart buildbot master instance"
   command:
     cmd: "{{ buildbot_master_bin }}/buildbotctl restart"
+
+- name: "Restart the buildbot master service."
+  listen: "restart buildbot master service"
+  become: yes
+  ansible.builtin.systemd:
+    name: buildbot-master.service
+    state: restarted
+  when: not (_buildbot_master_service_started.changed | d('no') | bool)
+

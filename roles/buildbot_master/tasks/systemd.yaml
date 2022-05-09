@@ -1,0 +1,25 @@
+---
+- name: "Install buildbot master systemd unit file."
+  become: yes
+  template:
+    src: "buildbot-master.service.j2"
+    dest: "/etc/systemd/system/buildbot-master.service"
+    owner: root
+    group: root
+    mode: "0664"
+  register: buildbot_master_unit_file
+
+- name: "Enable buildbot master service."
+  become: yes
+  ansible.builtin.systemd:
+    name: "buildbot-master.service"
+    enabled: yes
+    daemon_reload: yes
+  when: buildbot_master_unit_file.changed
+
+- name: "Start buildbot master service."
+  become: yes
+  ansible.builtin.systemd:
+    name: "buildbot-master.service"
+    state: started
+  register: _buildbot_master_service_started

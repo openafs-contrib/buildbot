@@ -13,3 +13,7 @@
 - import_tasks: configure.yaml
 
 - import_tasks: control.yaml
+  when: not buildbot_master_have_sudo
+
+- import_tasks: systemd.yaml
+  when: buildbot_master_have_sudo

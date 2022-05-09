@@ -16,7 +16,7 @@
   loop: "{{ buildbot_master_config_files }}"
   # Note: We restart on configuration change for now since reloading
   #       has been found to break the gerrit integration in the past.
-  notify: "restart buildbot master"
+  notify: "restart buildbot master {{ buildbot_master_have_sudo | ternary('service', 'instance') }}"
 
 - name: "Verify the buildbot master configuration."
   command:

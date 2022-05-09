@@ -55,7 +55,7 @@
     virtualenv: "{{ buildbot_master_venv }}"
     virtualenv_command: "{{ buildbot_master_python }} -m venv"
   register: pip_install_results
-  notify: "restart buildbot master"
+  notify: "restart buildbot master {{ buildbot_master_have_sudo | ternary('service', 'instance') }}"
 
 - name: "Create symlink to buildbot command"
   file:
