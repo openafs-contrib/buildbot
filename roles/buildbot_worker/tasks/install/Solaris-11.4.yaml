@@ -1,48 +1,60 @@
 ---
-
-# Python 3.5 is the minimum required version at this time.
-# Solaris provides a package for it, but it may not be installed
-# by default.
-- name: "Solaris 11.4: Getting python3 version"
-  command: /usr/bin/python3 -V
-  register: python_version
-  changed_when: false
-
-- name: "Solaris 11.4: Installing python 3.5"
+# Install the build requirements for python extensions to be built by pip
+# install.  The Python cryptography package requires a rust compiler, since
+# pre-built binaries are not available for Solaris.
+- name: "Solaris 11.4: Ensure required packages are installed."
   become: yes
   pkg5:
     state: present
-    name: "runtime/python-35"
-  when: python_version.get('stdout', '0') | replace('Python ','') is not version('3.5', '>=')
+    name:
+      - runtime/python-37
+      - python/virtualenv
+      - developer/build/pkg-config
+      - developer/rust/rustc
+      - developer/rust/cargo
+      - library/security/openssl-11
   tags: root
 
-# A c compiler is required to build the twisted modules. This should
-# have been already installed and cc should be in the path.
-- name: "Solaris 11.4: Check for cc "
-  command: which cc
-  register: which_cc
+# The Python cryptography package requires openssl 1.1 or greater. By default
+# both the 1.0 and 1.1 versions are installed, and the package mediator is
+# used to select the needed version.
+- name: "Solaris 11.4: Query openssl version."
+  command:
+    cmd: pkg mediator -H -F json openssl
   changed_when: false
+  register: pkg_mediator_results
 
-- name: "Solaris 11.4: Install python virtualenv"
+- name: "Solaris 11.4: Select openssl 1.1."
   become: yes
-  pkg5:
-    state: present
-    name: python/virtualenv
+  command:
+    cmd: pkg set-mediator -I default@1.1 openssl
+  when: (pkg_mediator_results.stdout | from_json)[0].implementation == 'default@1.0'
+  tags: root
+
+# Create the virtual env and upgrade pip to the most recent version.
+- name: "Solaris 11.4: Create the python virtualenv for the buildbot worker."
+  become: yes
+  pip:
+    state: latest
+    name: pip
+    virtualenv: /opt/buildbot-worker
+    virtualenv_python: /usr/bin/python3
   tags: root
 
 - name: "Solaris 11.4: Install buildbot worker"
   become: yes
   pip:
     virtualenv: /opt/buildbot-worker
-    virtualenv_python: /usr/bin/python3
     name: buildbot-worker
+  environment:
+    PKG_CONFIG_PATH: /usr/lib/64/pkgconfig
   tags: root
 
-- name: "Solaris 11.4: Set buildbot-worker path"
+- name: "Solaris 11.4: Set buildbot-worker path."
   set_fact:
     buildbot_worker_bin: /usr/bin/buildbot-worker
 
-- name: "Solaris 11.4: Create buildbot-worker symlink"
+- name: "Solaris 11.4: Create buildbot-worker symlink."
   become: yes
   file:
     state: link
