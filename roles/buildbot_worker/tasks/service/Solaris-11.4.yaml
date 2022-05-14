@@ -1,4 +1,19 @@
 ---
+# Honor the old 'solaris_cc' variable for backward compatibility.
+# New playbooks should specify the buildbot_worker_environment dict.
+- name: "Solaris 11.4: Check for deprecated solaris_cc variable."
+  debug:
+    msg: "Role variable solaris_cc is deprecated; use buildbot_worker_environment"
+  when: solaris_cc is defined
+
+- name: "Solaris 11.4: Use deprecated solaris_cc variable for compatibility."
+  set_fact:
+    buildbot_worker_environment:
+      SOLARISCC: "{{ solaris_cc }}"
+  when:
+    - buildbot_worker_environment is undefined
+    - solaris_cc is defined
+
 - name: "Solaris 11.4: Upload SMF manifest"
   become: yes
   vars:

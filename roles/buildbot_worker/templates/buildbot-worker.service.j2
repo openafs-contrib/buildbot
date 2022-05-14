@@ -6,6 +6,11 @@ After=network.target
 User={{ buildbot_user.name }}
 Group={{ buildbot_user.group }}
 WorkingDirectory={{ buildbot_worker_basedir }}
+{% if buildbot_worker_environment is defined %}
+{% for name, value in buildbot_worker_environment.items() %}
+Environment="{{ name }}={{ value }}"
+{% endfor %}
+{% endif %}
 ExecStart={{ buildbot_worker_bin }} start --nodaemon {{ buildbot_worker_basedir }}
 
 [Install]
