@@ -1,5 +1,5 @@
 ---
-- name: "CentOS-7: Install buildbot worker systemd unit file"
+- name: "CentOS: Install buildbot worker systemd unit file"
   become: yes
   vars:
     buildbot_worker_bin: /usr/bin/buildbot-worker
@@ -11,11 +11,11 @@
     mode: 0644
   tags: root
 
-- name: "CentOS-7: Set service name"
+- name: "CentOS: Set service name"
   set_fact:
     buildbot_worker_service: buildbot-worker
 
-- name: "CentOS-7: Start buildbot worker service"
+- name: "CentOS: Start buildbot worker service"
   become: yes
   systemd:
     name: "{{ buildbot_worker_service }}"

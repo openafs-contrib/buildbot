@@ -1,5 +1,5 @@
 ---
-- name: "Debian-11: Install buildbot worker"
+- name: "Debian: Install buildbot worker"
   become: yes
   apt:
     state: present
