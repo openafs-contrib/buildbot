@@ -1,5 +1,5 @@
 ---
-- name: "Ubuntu-18: Install buildbot worker"
+- name: "Ubuntu: Install buildbot worker"
   become: yes
   apt:
     state: present
