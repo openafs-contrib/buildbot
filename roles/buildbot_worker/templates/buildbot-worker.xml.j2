@@ -15,9 +15,13 @@
         </dependency>
         <method_context>
             <method_credential user="{{ buildbot_user.name }}" group="{{ buildbot_user.group }}"/>
+{% if buildbot_worker_environment is defined %}
             <method_environment>
-                <envvar name="SOLARISCC" value="{{ solaris_cc }}" />
+{% for name, value in buildbot_worker_environment.items() %}
+                <envvar name="{{ name }}" value="{{ value }}" />
+{% endfor %}
             </method_environment>
+{% endif %}
         </method_context>
         <exec_method type="method" name="start"
          exec="{{ buildbot_worker_bin }} start --quiet --nodaemon {{ buildbot_worker_basedir }}"
