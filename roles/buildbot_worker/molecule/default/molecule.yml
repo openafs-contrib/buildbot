@@ -2,9 +2,6 @@
 dependency:
   name: galaxy
 
-driver:
-  name: vagrant
-
 platforms:
   - name: m-bot
     box: ${BOX:-generic/debian11}

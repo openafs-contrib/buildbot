@@ -1,11 +1,9 @@
 ---
 dependency:
   name: galaxy
-driver:
-  name: vagrant
 platforms:
   - name: m-buildbot-master
-    box: generic/centos7
+    box: ${BOX:-generic/centos7}
     groups:
       - openafs_buildbot_masters
 provisioner:
