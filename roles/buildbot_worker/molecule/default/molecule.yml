@@ -7,7 +7,7 @@ driver:
 
 platforms:
   - name: m-bot
-    box: generic/debian10
+    box: ${BOX:-generic/debian11}
     groups:
       - openafs_buildbot_workers
 
