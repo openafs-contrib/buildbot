@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# {{ ansible_managed }}
+#
+# Wrapper to stop the buildbot worker.
+
+{{ buildbot_worker_bin }} stop {{ buildbot_worker_basedir }}

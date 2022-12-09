@@ -1,0 +1,39 @@
+---
+- name: "CentOS-6: Install buildbot worker wrapper scripts."
+  become: yes
+  template:
+    src: "{{ script_item }}.j2"
+    dest: "{{ buildbot_worker_basedir }}/{{ script_item }}"
+    owner: "{{ buildbot_user.uid }}"
+    group: "{{ buildbot_user.group }}"
+    mode: "0755"
+  loop:
+    - "buildbot-worker-start.sh"
+    - "buildbot-worker-stop.sh"
+    - "buildbot-worker-status.sh"
+  loop_control:
+    loop_var: script_item
+  tags: root
+
+- name: "CentOS-6: Install buildbot worker init script."
+  become: yes
+  template:
+    src: "buildbot-worker.init.j2"
+    dest: "/etc/init.d/buildbot-worker"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  tags: root
+
+- name: "CentOS-6: Set service name"
+  set_fact:
+    buildbot_worker_service: buildbot-worker
+
+- name: "CentOS-6: Enable the builddbot-worker service."
+  become: yes
+  ansible.builtin.sysvinit:
+    name: "{{ buildbot_worker_service }}"
+    state: started
+    enabled: yes
+    runlevels: [2, 3, 4, 5]
+  register: sysvinit_results

@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# {{ ansible_managed }}
+#
+# Wrapper to set env and start the buildbot worker.
+#
+
+# Put /usr/local/bin early to pick up newer autoconf.
+export PATH=/usr/local/bin:/opt/rh/rh-python36/root/usr/bin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:
+{% if buildbot_worker_environment is defined %}
+{% for name, value in buildbot_worker_environment.items() %}
+export {{ name }}="{{ value }}"
+{% endfor %}
+{% endif %}
+
+{{ buildbot_worker_bin }} start {{ buildbot_worker_basedir }}
+RETVAL=$?
+exit $RETVAL

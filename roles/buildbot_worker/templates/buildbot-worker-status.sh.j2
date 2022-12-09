@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# {{ ansible_managed }}
+#
+# Wrapper to get the builbot-worker status.
+
+if [ -f "{{ buildbot_worker_basedir }}/twistd.pid" ]; then
+    PID=`cat {{ buildbot_worker_basedir }}/twistd.pid`
+else
+    PID=""
+fi
+if [ "x$PID" = "x" ]; then
+    echo "buildbot-worker is stopped."
+    RETVAL=3
+else
+    echo "buildbot-worker (pid=$PID) is running..."
+    RETVAL=0
+fi
+exit $RETVAL

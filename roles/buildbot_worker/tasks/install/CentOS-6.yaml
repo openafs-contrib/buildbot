@@ -1,0 +1,51 @@
+---
+- name: "CentOS-6: Add EPEL repository"
+  become: yes
+  yum:
+    state: present
+    name: epel-release
+    update_cache: yes
+  tags: root
+
+# A c compiler may be required to build the twisted modules.
+- name: "CentOS-6: Install packages"
+  become: yes
+  yum:
+    state: present
+    name:
+     - make
+     - gcc
+  tags: root
+
+- name: "CentOS-6: Check for buildbot-worker"
+  stat:
+    path: "/opt/buildbot-worker/bin/buildbot-worker"
+  register: st
+
+# Install a pre-rust version of cryptography, since rustc has
+# EOLed on CentOS-6.
+- name: "CentOS-6: Install buildbot-worker"
+  become: yes
+  when: not st.stat.exists
+  command:
+    cmd: "{{ cmd_item }}"
+  loop:
+    - "/opt/rh/rh-python36/root/usr/bin/python3 -m venv /opt/buildbot-worker"
+    - "/opt/buildbot-worker/bin/pip3 install -U pip"
+    - "/opt/buildbot-worker/bin/pip3 install 'cryptography<3.5'"
+    - "/opt/buildbot-worker/bin/pip3 install buildbot-worker"
+  loop_control:
+    loop_var: cmd_item
+  tags: root
+
+- name: "CentOS-6: Set buildbot-worker path"
+  set_fact:
+    buildbot_worker_bin: /usr/bin/buildbot-worker
+
+- name: "CentOS-6: Create buildbot-worker symlink"
+  become: yes
+  file:
+    state: link
+    src: /opt/buildbot-worker/bin/buildbot-worker
+    path: "{{ buildbot_worker_bin }}"
+  tags: root
