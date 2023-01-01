@@ -22,5 +22,3 @@ support molecule tests.  See the `buildbot_master_have_sudo` and
 This role will automatically restart the buildbot master after a
 configuration change, instead of just reloading the configuration.  This has
 been found to be more reliable.
-
-This role will manage ssh keys needed for the buildbot gerrit integration.

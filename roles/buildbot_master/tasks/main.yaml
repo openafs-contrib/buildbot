@@ -4,9 +4,6 @@
     that:
       - buildbot_project is defined
 
-- include_tasks: gerrit_keys.yaml
-  when: buildbot_master_gerrit_ident is defined
-
 - include_tasks: install.yaml
   when: buildbot_master_install | d('yes') | bool
 
