@@ -4,11 +4,6 @@
     cmd: "{{ buildbot_master_buildbot_command }} create-master {{ buildbot_master_basedir }}"
     creates: "{{ buildbot_master_basedir }}/buildbot.tac"
 
-- name: "Remove the sample configuration file."
-  file:
-    path: "{{ buildbot_master_basedir }}/master.cfg.sample"
-    state: absent
-
 - name: "Install the buildbot master configuration."
   template:
     src: "{{ item }}"
