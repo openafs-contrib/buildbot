@@ -1,6 +1,6 @@
 namespace: openafs_contrib
 name: buildbot
-version: 1.7.0
+version: 1.8.0
 readme: README.md
 authors:
   - Michael Meffie <mmeffie@sinenomine.net>
@@ -11,6 +11,7 @@ tags:
 build_ignore:
   - .gitignore
   - .venv
+  - .config
   - builds
   - tools
   - roles/*/.env.yml
