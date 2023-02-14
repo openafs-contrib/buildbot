@@ -48,9 +48,13 @@ getpid() {
 start() {
     # The buildbot start command is non-idempotent, so only run it when it appears
     # the buildbot is stopped.
+    local option=$1
     local pid=$(getpid)
+
     if [ ! -z "$pid" ]; then
-        echo "buildbot master is already running (pid $pid)"
+        if [ "x$option" != "x--quiet" ]; then
+            echo "buildbot master is already running (pid $pid)"
+        fi
     else
         echo "Upgrading buildbot database"
         $BUILDBOT upgrade-master $BASEDIR
@@ -102,7 +106,7 @@ fi
 case "$1" in
 start)
     lock
-    start
+    start $2
     ;;
 stop)
     lock

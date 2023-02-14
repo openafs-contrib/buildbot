@@ -9,11 +9,11 @@
   cron:
     name: "Start the buildbot master on reboot."
     special_time: reboot
-    job: "{{ buildbot_master_bin }}/buildbotctl start"
+    job: "{{ buildbot_master_bin }}/buildbotctl start --quiet"
 
 - name: "Create the watchdog cron entry."
   cron:
     name: "Ensure the buildbot master is running."
     special_time: hourly
-    job: "{{ buildbot_master_bin }}/buildbotctl start"
+    job: "{{ buildbot_master_bin }}/buildbotctl start --quiet"
   when: buildbot_master_watchdog | d('yes') | bool
