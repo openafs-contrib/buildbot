@@ -1,11 +1,38 @@
 ---
-- name: "CentOS-6: Add EPEL repository"
-  become: yes
-  yum:
-    state: present
-    name: epel-release
-    update_cache: yes
-  tags: root
+#
+# CentOS 6 shipped with python 2.6, which is too old to support the buildbot.
+# Before running this role, in install python 2.7 or a python 3.x and set
+# `buildbot_worker_python` to the path of this installed python.  Python 2.7
+# can be installed from source. Python 3.x can be installed using the RH
+# software collections.
+#
+- name: "CentOS-6: Verify buildbot worker python is defined."
+  assert:
+    that:
+      - buildbot_worker_python is defined
+
+- name: "CentOS-6: Set install commands (py3)"
+  set_fact:
+    buildbot_install_commands:
+      # Install a pre-rust version of cryptography, since rustc has EOLed on CentOS-6.
+      - "{{ buildbot_worker_python }} -m venv /opt/buildbot-worker"
+      - "/opt/buildbot-worker/bin/pip3 install -U pip"
+      - "/opt/buildbot-worker/bin/pip3 install 'cryptography<3.5'"
+      - "/opt/buildbot-worker/bin/pip3 install buildbot-worker"
+  when: buildbot_worker_python | regex_search(".*/python3$")
+
+- name: "CentOS-6: Set install commands (py2)"
+  set_fact:
+    buildbot_install_commands:
+      # Install python 2.7 supported packages.
+      - "virtualenv --python={{ buildbot_worker_python }} /opt/buildbot-worker"
+      - "/opt/buildbot-worker/bin/pip install Automat==0.8.0"
+      - "/opt/buildbot-worker/bin/pip install buildbot-worker==3.11.9"
+  when: buildbot_worker_python | regex_search(".*/python2.7$")
+
+- name: "CentOS-6: Set buildbot-worker path"
+  set_fact:
+    buildbot_worker_bin: /usr/bin/buildbot-worker
 
 # A c compiler may be required to build the twisted modules.
 - name: "CentOS-6: Install packages"
@@ -22,25 +49,15 @@
     path: "/opt/buildbot-worker/bin/buildbot-worker"
   register: st
 
-# Install a pre-rust version of cryptography, since rustc has
-# EOLed on CentOS-6.
 - name: "CentOS-6: Install buildbot-worker"
   become: yes
   when: not st.stat.exists
   command:
     cmd: "{{ cmd_item }}"
-  loop:
-    - "/opt/rh/rh-python36/root/usr/bin/python3 -m venv /opt/buildbot-worker"
-    - "/opt/buildbot-worker/bin/pip3 install -U pip"
-    - "/opt/buildbot-worker/bin/pip3 install 'cryptography<3.5'"
-    - "/opt/buildbot-worker/bin/pip3 install buildbot-worker"
+  loop: "{{ buildbot_install_commands }}"
   loop_control:
     loop_var: cmd_item
   tags: root
-
-- name: "CentOS-6: Set buildbot-worker path"
-  set_fact:
-    buildbot_worker_bin: /usr/bin/buildbot-worker
 
 - name: "CentOS-6: Create buildbot-worker symlink"
   become: yes
