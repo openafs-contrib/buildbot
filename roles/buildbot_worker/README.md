@@ -1,16 +1,17 @@
 Ansible Role: Buildbot Worker
 =============================
 
-Deploy and manage buildbot worker.
+Deploy and manage buildbot workers.
 
 Platforms
 =========
 
+* CentOS 6
 * RHEL/CentOS 7
 * RHEL/CentOS 8
-* Debian 10
-* Fedora 31
+* AlmaLinux
+* Debian
+* Fedora
 * openSUSE Leap
 * Solaris 11.4
-* Ubuntu 18
-* Ubuntu 20
+* Ubuntu
