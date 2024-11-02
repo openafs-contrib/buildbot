@@ -12,8 +12,6 @@ help:
 	@echo "usage: make <target>"
 	@echo "targets:"
 	@echo "  venv        install virtualenv"
-	@echo "  lint        run lint checks"
-	@echo "  test        run unit and molecule tests"
 	@echo "  build       build openafs collection"
 	@echo "  install     install openafs collection"
 	@echo "  clean       remove generated files"
@@ -22,22 +20,19 @@ help:
 .venv/bin/activate:
 	test -d .venv || $(PYTHON) -m venv .venv
 	.venv/bin/pip install -U pip
-	.venv/bin/pip install wheel
-	.venv/bin/pip install molecule[ansible] molecule-vagrant molecule-virtup \
-                          python-vagrant ansible-lint flake8 pyflakes pytest \
-                          sphinx sphinx-rtd-theme ansible-doc-extractor
+	.venv/bin/pip install -r requirements.txt
 	touch .venv/bin/activate
 
 init venv: .venv/bin/activate
 
 builds/$(NAMESPACE)-$(NAME)-$(VERSION).tar.gz:
 	mkdir -p builds
-	ansible-galaxy collection build --output-path builds .
+	.venv/bin/ansible-galaxy collection build --output-path builds .
 
 build: builds/$(NAMESPACE)-$(NAME)-$(VERSION).tar.gz
 
 install: build
-	ansible-galaxy collection install $(UPDATE) builds/$(NAMESPACE)-$(NAME)-$(VERSION).tar.gz
+	.venv/bin/ansible-galaxy collection install $(UPDATE) builds/$(NAMESPACE)-$(NAME)-$(VERSION).tar.gz
 
 clean:
 	rm -rf builds
