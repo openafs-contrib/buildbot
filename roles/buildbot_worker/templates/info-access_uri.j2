@@ -1,1 +1,1 @@
-ssh://{{ ansible_fqdn }}
+{{ buildbot_worker_access_uri | d('ssh://' + ansible_fqdn) }}
