@@ -11,6 +11,7 @@ set -e
 BUILDBOT="{{ buildbot_master_buildbot_command }}"
 BASEDIR="{{ buildbot_master_basedir }}"
 PIDFILE="{{ buildbot_master_pidfile }}"
+MAXROTATE={{ buidlbot_master_maxrotate | d(10) }}
 
 usage() {
     echo "usage: buildbotctl start|stop|status|checkconfig|reload|restart" >&2
@@ -39,6 +40,20 @@ getpid() {
                 echo "$pid"
             fi
         fi
+    fi
+}
+
+# Rotate the master log file.
+rotatelog() {
+    local log=${BASEDIR}/twisted.log
+    if [ -f "${log}"]; then
+        rm -f ${log}.${MAXROTATE}
+        seq $((MAXROTATE - 1)) -1 1 | while read i; do
+            if [ -f ${log}.$i ]; then
+                mv -n ${log}.$i ${log}.$((i + 1))
+            fi
+        done
+        mv -n ${log} ${log}.1
     fi
 }
 
@@ -126,6 +141,7 @@ restart)
     lock
     stop
     sleep 10
+    rotatelog
     start
     status
     ;;
