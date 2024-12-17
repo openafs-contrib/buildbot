@@ -1,0 +1,50 @@
+---
+- name: "AlmaLinux: Add EPEL repository"
+  become: yes
+  yum:
+    state: present
+    name: epel-release
+    update_cache: yes
+  tags: root
+
+# The c compiler is required to build the twisted modules.
+- name: "AlmaLinux: Install python3 and gcc"
+  become: yes
+  yum:
+    state: present
+    name:
+     - python3
+     - python3-setuptools
+     - python3-virtualenv
+     - make
+     - gcc
+  tags: root
+
+- name: "AlmaLinux: Create python virtual env"
+  become: yes
+  pip:
+    name: pip
+    state: latest
+    #executable: pip3
+    virtualenv: /opt/buildbot-worker
+    virtualenv_command: /usr/bin/python3 -m venv
+  tags: root
+
+- name: "AlmaLinux: Install buildbot worker"
+  become: yes
+  pip:
+    name: buildbot-worker==3.11.9
+    virtualenv: /opt/buildbot-worker
+  tags: root
+
+- name: "AlmaLinux: Set buildbot-worker path"
+  set_fact:
+    buildbot_worker_bin: /usr/bin/buildbot-worker
+
+- name: "AlmaLinux: Create buildbot-worker symlink"
+  become: yes
+  file:
+    state: link
+    src: /opt/buildbot-worker/bin/buildbot-worker
+    path: "{{ buildbot_worker_bin }}"
+  tags: root
