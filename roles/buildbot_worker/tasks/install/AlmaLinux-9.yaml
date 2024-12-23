@@ -1,4 +1,12 @@
 ---
+- name: "AlmaLinux: Add EPEL repository"
+  become: yes
+  yum:
+    state: present
+    name: epel-release
+    update_cache: yes
+  tags: root
+
 # The c compiler is required to build the twisted modules.
 - name: "AlmaLinux: Install python3 and gcc"
   become: yes
@@ -16,6 +24,7 @@
   pip:
     name: pip
     state: latest
+    #executable: pip3
     virtualenv: /opt/buildbot-worker
     virtualenv_command: /usr/bin/python3 -m venv
   tags: root
