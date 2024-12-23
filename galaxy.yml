@@ -1,6 +1,6 @@
 namespace: openafs_contrib
 name: buildbot
-version: 1.8.4
+version: 1.8.5
 readme: README.md
 authors:
   - Michael Meffie <mmeffie@sinenomine.net>
