@@ -16,8 +16,6 @@
 
 - name: "Solaris 11.4: Upload SMF manifest"
   become: yes
-  vars:
-    buildbot_worker_bin: /usr/bin/buildbot-worker
   template:
     src: buildbot-worker.xml.j2
     dest: /root/buildbot-worker.xml

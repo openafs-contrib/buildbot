@@ -34,10 +34,6 @@
     virtualenv: /opt/buildbot-worker
   tags: root
 
-- name: "CentOS-8: Set buildbot-worker path"
-  set_fact:
-    buildbot_worker_bin: /usr/bin/buildbot-worker
-
 - name: "CentOS-8: Create buildbot-worker symlink"
   become: yes
   file:

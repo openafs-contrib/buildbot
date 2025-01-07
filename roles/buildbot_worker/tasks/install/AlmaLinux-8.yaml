@@ -37,10 +37,6 @@
     virtualenv: /opt/buildbot-worker
   tags: root
 
-- name: "AlmaLinux: Set buildbot-worker path"
-  set_fact:
-    buildbot_worker_bin: /usr/bin/buildbot-worker
-
 - name: "AlmaLinux: Create buildbot-worker symlink"
   become: yes
   file:

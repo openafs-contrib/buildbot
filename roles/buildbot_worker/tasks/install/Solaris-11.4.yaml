@@ -50,10 +50,6 @@
     PKG_CONFIG_PATH: /usr/lib/64/pkgconfig
   tags: root
 
-- name: "Solaris 11.4: Set buildbot-worker path."
-  set_fact:
-    buildbot_worker_bin: /usr/bin/buildbot-worker
-
 - name: "Solaris 11.4: Create buildbot-worker symlink."
   become: yes
   file:

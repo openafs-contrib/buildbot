@@ -18,10 +18,6 @@
     virtualenv_command: /usr/bin/python3 -m venv
   tags: root
 
-- name: "Fedora: Set buildbot-worker path"
-  set_fact:
-    buildbot_worker_bin: /usr/bin/buildbot-worker
-
 - name: "Fedora: Create buildbot-worker symlink"
   become: yes
   file:

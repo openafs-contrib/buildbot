@@ -30,10 +30,6 @@
       - "/opt/buildbot-worker/bin/pip install buildbot-worker==3.11.9"
   when: buildbot_worker_python | regex_search(".*/python2.7$")
 
-- name: "CentOS-6: Set buildbot-worker path"
-  set_fact:
-    buildbot_worker_bin: /usr/bin/buildbot-worker
-
 # A c compiler may be required to build the twisted modules.
 - name: "CentOS-6: Install packages"
   become: yes

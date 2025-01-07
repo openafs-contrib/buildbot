@@ -14,6 +14,15 @@
       - buildbot_worker_password is defined
       - buildbot_worker_password | length > 0
 
+- name: "Set OS specific variables"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "vars/{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
+    - "vars/{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
+    - "vars/{{ ansible_distribution | replace(' ', '_') }}.yaml"
+    - "vars/{{ ansible_os_family | replace(' ', '_') }}.yaml"
+    - "vars/defaults.yaml"
+
 - name: "Include OS specific install tasks"
   include_tasks: "{{ item }}"
   with_first_found:
@@ -45,7 +54,7 @@
   become_user: buildbot
   command:
     cmd: >
-      buildbot-worker create-worker {{ buildbot_worker_basedir }}
+      {{ buildbot_worker_bin }} create-worker {{ buildbot_worker_basedir }}
       {{ buildbot_master_host }}:{{ buildbot_master_port }}
       {{ buildbot_worker_name }} {{ buildbot_worker_password }}
     creates: "{{ buildbot_worker_basedir }}/buildbot.tac"

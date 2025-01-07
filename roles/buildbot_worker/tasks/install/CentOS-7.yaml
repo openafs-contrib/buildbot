@@ -45,10 +45,6 @@
     creates: /opt/buildbot-worker/lib/python3.6/site-packages/buildbot_worker
   tags: root
 
-- name: "CentOS-7: Set buildbot-worker path"
-  set_fact:
-    buildbot_worker_bin: /usr/bin/buildbot-worker
-
 - name: "CentOS-7: Create buildbot-worker symlink"
   become: yes
   file:
