@@ -14,7 +14,7 @@
             <service_fmri value="svc:/system/filesystem/local"/>
         </dependency>
         <method_context>
-            <method_credential user="{{ buildbot_user.name }}" group="{{ buildbot_user.group }}"/>
+            <method_credential user="{{ buildbot_worker_user }}" group="{{ buildbot_worker_group }}"/>
 {% if buildbot_worker_environment is defined %}
             <method_environment>
 {% for name, value in buildbot_worker_environment.items() %}

@@ -35,17 +35,17 @@
 - name: "Create buildbot user account"
   become: yes
   user:
-    name: buildbot
     state: present
-  register: buildbot_user
+    name: "{{ buildbot_worker_user }}"
+    group: "{{ buildbot_worker_group }}"
 
 - name: "Create buildbot base directory"
   become: yes
   file:
     state: directory
     path: "{{ buildbot_worker_basedir }}"
-    owner: "{{ buildbot_user.uid }}"
-    group: "{{ buildbot_user.group }}"
+    owner: "{{ buildbot_worker_user }}"
+    group: "{{ buildbot_worker_group }}"
     mode: "0755"
 
 - name: "Create buildbot worker"
@@ -81,8 +81,8 @@
   file:
     state: directory
     path: "{{ buildbot_worker_basedir }}/info"
-    owner: "{{ buildbot_user.uid }}"
-    group: "{{ buildbot_user.group }}"
+    owner: "{{ buildbot_worker_user }}"
+    group: "{{ buildbot_worker_group }}"
     mode: "0755"
 
 - name: "Update buildbot worker info files."
@@ -90,8 +90,8 @@
   template:
     src: "info-{{ info_item }}.j2"
     dest: "{{ buildbot_worker_basedir }}/info/{{ info_item }}"
-    owner: "{{ buildbot_user.uid }}"
-    group: "{{ buildbot_user.group }}"
+    owner: "{{ buildbot_worker_user }}"
+    group: "{{ buildbot_worker_group }}"
     mode: "0644"
   loop:
     - "host"

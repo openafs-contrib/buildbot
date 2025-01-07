@@ -4,8 +4,8 @@
   template:
     src: "{{ script_item }}.j2"
     dest: "{{ buildbot_worker_basedir }}/{{ script_item }}"
-    owner: "{{ buildbot_user.uid }}"
-    group: "{{ buildbot_user.group }}"
+    owner: "{{ buildbot_worker_user }}"
+    group: "{{ buildbot_worker_group }}"
     mode: "0755"
   loop:
     - "buildbot-worker-start.sh"

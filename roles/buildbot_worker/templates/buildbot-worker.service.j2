@@ -3,8 +3,8 @@ Description=BuildBot worker service
 After=network.target
 
 [Service]
-User={{ buildbot_user.name }}
-Group={{ buildbot_user.group }}
+User={{ buildbot_worker_user }}
+Group={{ buildbot_worker_group }}
 WorkingDirectory={{ buildbot_worker_basedir }}
 {% if buildbot_worker_environment is defined %}
 {% for name, value in buildbot_worker_environment.items() %}
