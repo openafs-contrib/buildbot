@@ -1,0 +1,19 @@
+---
+- name: "MacOSX: Install launch daemon configuration file"
+  become: true
+  template:
+    src: net.buildbot.worker.plist.j2
+    dest: /Library/LaunchDaemons/net.buildbot.worker.plist
+    owner: root
+    group: wheel
+    mode: "0664"
+  tags: root
+
+- name: "MacOSX: Launch buildbot worker"
+  become: true
+  community.general.launchd:
+    name: net.buildbot.worker
+    state: started
+  tags: root
+  # Skip until launchctl errno 5 errors are fixed.
+  when: false

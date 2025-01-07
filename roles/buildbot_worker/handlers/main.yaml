@@ -4,4 +4,5 @@
   service:
     name: "{{ buildbot_worker_service }}"
     state: restarted
+  when: ansible_distribution != "MacOSX"
   tags: root

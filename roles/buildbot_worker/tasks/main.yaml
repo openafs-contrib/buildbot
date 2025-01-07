@@ -14,6 +14,11 @@
       - buildbot_worker_password is defined
       - buildbot_worker_password | length > 0
 
+- debug: var=ansible_os_family
+- debug: var=ansible_distribution
+- debug: var=ansible_distribution_major_version
+- debug: var=ansible_distribution_version
+
 - name: "Set OS specific variables"
   include_vars: "{{ item }}"
   with_first_found:
