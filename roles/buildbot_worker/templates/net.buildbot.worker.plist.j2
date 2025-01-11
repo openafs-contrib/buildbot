@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+         <key>Label</key>
+         <string>net.buildbot.worker</string>
+
+         <key>UserName</key>
+         <string>{{ buildbot_worker_user }}</string>
+
+         <key>WorkingDirectory</key>
+         <string>{{ buildbot_worker_basedir }}</string>
+
+         <key>ProgramArguments</key>
+         <array>
+                 <string>{{ buildbot_worker_bin }}</string>
+                 <string>start</string>
+                 <string>--nodaemon</string>
+                 <string>{{ buildbot_worker_basedir }}</string>
+         </array>
+
+         <key>EnvironmentVariables</key>
+         <dict>
+                 <key>PATH</key>
+                 <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+                 <key>ARCHFLAGS</key>
+                 <string>-arch x86_64 -arch arm64</string>
+         </dict>
+
+         <key>KeepAlive</key>
+         <dict>
+                 <key>SuccessfulExit</key>
+                 <false/>
+         </dict>
+
+         <key>RunAtLoad</key>
+         <true/>
+
+         <key>StandardOutPath</key>
+         <string>{{ buildbot_worker_basedir }}/buildbot-worker.out</string>
+
+         <key>StandardErrorPath</key>
+         <string>{{ buildbot_worker_basedir }}/buildbot-worker.err</string>
+
+</dict>
+</plist>
