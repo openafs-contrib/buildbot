@@ -46,7 +46,7 @@ getpid() {
 # Rotate the master log file.
 rotatelog() {
     local log=${BASEDIR}/twisted.log
-    if [ -f "${log}"]; then
+    if [ -f "${log}" ]; then
         rm -f ${log}.${MAXROTATE}
         seq $((MAXROTATE - 1)) -1 1 | while read i; do
             if [ -f ${log}.$i ]; then
