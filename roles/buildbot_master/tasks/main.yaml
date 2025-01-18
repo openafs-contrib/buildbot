@@ -8,6 +8,8 @@
   when: buildbot_master_install | d('yes') | bool
 
 - import_tasks: configure.yaml
+  tags:
+    - configure
 
 - import_tasks: control.yaml
   when: not buildbot_master_have_sudo

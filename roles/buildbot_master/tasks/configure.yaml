@@ -3,6 +3,8 @@
   command:
     cmd: "{{ buildbot_master_buildbot_command }} create-master {{ buildbot_master_basedir }}"
     creates: "{{ buildbot_master_basedir }}/buildbot.tac"
+  tags:
+    - configure
 
 - name: "Install the buildbot master configuration."
   template:
@@ -12,6 +14,8 @@
   # Note: We restart on configuration change for now since reloading
   #       has been found to break the gerrit integration in the past.
   notify: "restart buildbot master {{ buildbot_master_have_sudo | ternary('service', 'instance') }}"
+  tags:
+    - configure
 
 - name: "Verify the buildbot master configuration."
   command:
@@ -21,6 +25,8 @@
   check_mode: no
   changed_when: false
   register: checkconfig_results
+  tags:
+    - configure
 
 #- debug:
 #    var: checkconfig_results
