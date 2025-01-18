@@ -45,16 +45,48 @@ getpid() {
 
 # Rotate the master log file.
 rotatelog() {
-    local log=${BASEDIR}/twisted.log
-    if [ -f "${log}" ]; then
-        rm -f ${log}.${MAXROTATE}
-        seq $((MAXROTATE - 1)) -1 1 | while read i; do
-            if [ -f ${log}.$i ]; then
-                mv -n ${log}.$i ${log}.$((i + 1))
-            fi
-        done
-        mv -n ${log} ${log}.1
+    local log=${BASEDIR}/twistd.log
+    local size
+    local i
+    local j
+
+    # Avoid rotating when the log is missing.
+    if [ ! -f "${log}" ]; then
+        echo "Skipping log rotation; File ${log} not found." >&2
+        return
     fi
+
+    # Avoid rotating when the log is empty.
+    size=$(du -k "$log" | cut -f1)
+    if [ $size -eq 0 ]; then
+        echo "Skipping log rotation; File ${log} is empty." >&2
+        return
+    fi
+
+    # Make room for the rotation.
+    rm -f "${log}.${MAXROTATE}"
+
+    # Rotate the numbered logs by renaming to avoid copy.
+    for ((j=MAXROTATE; j>1; j--)); do
+        i=$((j - 1))
+        echo "Rotating ${log}.${i} to ${log}.${j}"
+        if [ -f ${log}.${i} ]; then
+            if [ -f "${log}.${j}" ]; then
+                echo "Skipping log rotation; File ${log}.${j} is in the way." >&2
+                return
+            fi
+            mv "${log}.${i}" "${log}.${j}"
+        fi
+    done
+
+    # Copy the log contents and then truncate since the log may be in use.
+    if [ -f ${log}.1 ]; then
+        echo "Skipping log rotation; File ${log}.1 is in the way." >&2
+        return
+    fi
+    echo "Rotating ${log} to ${log}.1"
+    cp "${log}" "${log}.1"
+    cat /dev/null >"${log}"
 }
 
 # Start the buildbot master if it is not running.
@@ -141,9 +173,11 @@ restart)
     lock
     stop
     sleep 10
-    rotatelog
     start
     status
+    ;;
+rotatelog)
+    rotatelog
     ;;
 *)
     echo "bad command" >&2
