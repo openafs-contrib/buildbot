@@ -37,12 +37,18 @@
     - "install/{{ ansible_os_family | replace(' ', '_') }}.yaml"
     - "unknown.yaml"
 
-- name: "Create buildbot user account"
+- name: "Create the buildbot user account"
   become: yes
   user:
     state: present
     name: "{{ buildbot_worker_user }}"
-    group: "{{ buildbot_worker_group }}"
+    group: "{{ buildbot_worker_group | d(omit) }}"
+  register: _buildbot_worker_adduser
+
+- name: "Get the buildbot user primary group"
+  set_fact:
+    buildbot_worker_group: "{{ _buildbot_worker_adduser.group }}"
+  when: buildbot_worker_group is undefined
 
 - name: "Create buildbot base directory"
   become: yes
