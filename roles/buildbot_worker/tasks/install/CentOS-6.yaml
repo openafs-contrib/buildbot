@@ -16,19 +16,19 @@
     buildbot_install_commands:
       # Install a pre-rust version of cryptography, since rustc has EOLed on CentOS-6.
       - "{{ buildbot_worker_python }} -m venv /opt/buildbot-worker"
-      - "/opt/buildbot-worker/bin/pip3 install -U pip"
+      - "/opt/buildbot-worker/bin/pip3 install --upgrade pip"
       - "/opt/buildbot-worker/bin/pip3 install 'cryptography<3.5'"
-      - "/opt/buildbot-worker/bin/pip3 install buildbot-worker"
-  when: buildbot_worker_python | regex_search(".*/python3$")
+      - "/opt/buildbot-worker/bin/pip3 install buildbot-worker==3.11.9"
+  when: buildbot_worker_python | regex_search(".*/python3")
 
 - name: "CentOS-6: Set install commands (py2)"
   set_fact:
     buildbot_install_commands:
       # Install python 2.7 supported packages.
-      - "virtualenv --python={{ buildbot_worker_python }} /opt/buildbot-worker"
+      - "{{ buildbot_worker_python }} -m virtualenv --python={{ buildbot_worker_python }} /opt/buildbot-worker"
       - "/opt/buildbot-worker/bin/pip install Automat==0.8.0"
       - "/opt/buildbot-worker/bin/pip install buildbot-worker==3.11.9"
-  when: buildbot_worker_python | regex_search(".*/python2.7$")
+  when: buildbot_worker_python | regex_search(".*/python2.7")
 
 # A c compiler may be required to build the twisted modules.
 - name: "CentOS-6: Install packages"

@@ -30,7 +30,7 @@
 - name: "CentOS-8: Install buildbot worker"
   become: yes
   pip:
-    name: buildbot-worker
+    name: buildbot-worker==3.11.9
     virtualenv: /opt/buildbot-worker
   tags: root
 

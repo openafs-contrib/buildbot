@@ -41,7 +41,7 @@
 - name: "CentOS-7: Install buildbot-worker"
   become: yes
   command:
-    cmd: /opt/buildbot-worker/bin/pip3 install buildbot-worker
+    cmd: /opt/buildbot-worker/bin/pip3 install buildbot-worker==3.11.9
     creates: /opt/buildbot-worker/lib/python3.6/site-packages/buildbot_worker
   tags: root
 
