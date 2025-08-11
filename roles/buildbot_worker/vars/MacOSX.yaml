@@ -1,4 +1,4 @@
 ---
 buildbot_worker_user: buildbot
 buildbot_worker_group: staff
-buildbot_worker_bin: /usr/local/bin/buildbot-worker
+buildbot_worker_bin: /opt/buildbot-worker/bin/buildbot-worker
