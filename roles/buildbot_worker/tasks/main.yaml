@@ -85,6 +85,8 @@
     port: "{{ buildbot_master_port }}"
     workername: "'{{ buildbot_worker_name }}'"
     passwd: "'{{ buildbot_worker_password }}'"
+  loop_control:
+    label: "key: {{ item.key }}, value: {{ (item.key == 'passwd') | ternary('********', item.value) }}"
   notify: "Restart service"
 
 - name: "Create buildbot worker info directory."
