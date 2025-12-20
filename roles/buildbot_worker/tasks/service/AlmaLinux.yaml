@@ -1,5 +1,5 @@
 ---
-- name: "AlmaLinux-8: Install buildbot worker systemd unit file"
+- name: "AlmaLinux: Install buildbot worker systemd unit file"
   become: yes
   template:
     src: buildbot-worker.service.j2
@@ -9,11 +9,11 @@
     mode: 0644
   tags: root
 
-- name: "AlmaLinux-8: Set service name"
+- name: "AlmaLinux: Set service name"
   set_fact:
     buildbot_worker_service: buildbot-worker
 
-- name: "AlmaLinux-8: Start buildbot worker service"
+- name: "AlmaLinux: Start buildbot worker service"
   become: yes
   systemd:
     name: "{{ buildbot_worker_service }}"
