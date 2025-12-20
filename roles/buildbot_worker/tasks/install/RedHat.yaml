@@ -1,0 +1,58 @@
+---
+- name: "RedHat: Enable CodeReady Builder repository"
+  become: yes
+  vars:
+    release: "{{ ansible_distribution_major_version }}"
+    arch: "{{ ansible_architecture }}"
+  community.general.rhsm_repository:
+    state: enabled
+    name: "codeready-builder-for-rhel-{{ release }}-{{ arch }}-rpms"
+  tags: root
+
+- name: "RedHat: Install EPEL release package"
+  become: yes
+  vars:
+    release: "{{ ansible_distribution_major_version }}"
+  ansible.builtin.dnf:
+    state: present
+    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ release }}.noarch.rpm"
+    disable_gpg_check: yes
+  tags: root
+
+# The twisted modules are compiled.
+- name: "RedHat: Install python3 and gcc"
+  become: yes
+  yum:
+    state: present
+    name:
+     - python3
+     - python3-setuptools
+     - python3-devel
+     - make
+     - gcc
+  tags: root
+
+- name: "RedHat: Create python virtual env"
+  become: yes
+  pip:
+    name: pip
+    state: latest
+    #executable: pip3
+    virtualenv: /opt/buildbot-worker
+    virtualenv_command: /usr/bin/python3 -m venv
+  tags: root
+
+- name: "RedHat: Install buildbot worker"
+  become: yes
+  pip:
+    name: buildbot-worker
+    virtualenv: /opt/buildbot-worker
+  tags: root
+
+- name: "RedHat: Create buildbot-worker symlink"
+  become: yes
+  file:
+    state: link
+    src: /opt/buildbot-worker/bin/buildbot-worker
+    path: "{{ buildbot_worker_bin }}"
+  tags: root
