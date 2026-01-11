@@ -14,111 +14,67 @@
       - buildbot_worker_password is defined
       - buildbot_worker_password | length > 0
 
-- debug: var=ansible_os_family
-- debug: var=ansible_distribution
-- debug: var=ansible_distribution_major_version
 - debug: var=ansible_distribution_version
+- debug: var=ansible_distribution_major_version
+- debug: var=ansible_distribution
+- debug: var=ansible_os_family
 
 - name: "Set OS specific variables"
   include_vars: "{{ item }}"
   with_first_found:
-    - "vars/{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
-    - "vars/{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
-    - "vars/{{ ansible_distribution | replace(' ', '_') }}.yaml"
-    - "vars/{{ ansible_os_family | replace(' ', '_') }}.yaml"
-    - "vars/defaults.yaml"
+    - files:
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
+        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
+        - "defaults.yaml"
+      paths:
+        - "{{ role_path }}/vars"
 
-- name: "Include OS specific install tasks"
+- name: "Stage 1: Install buildbot-worker package."
   include_tasks: "{{ item }}"
   with_first_found:
-    - "install/{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
-    - "install/{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
-    - "install/{{ ansible_distribution | replace(' ', '_') }}.yaml"
-    - "install/{{ ansible_os_family | replace(' ', '_') }}.yaml"
-    - "unknown.yaml"
+    - files:
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
+        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
+        - "default.yaml"
+      paths:
+        - "{{ role_path }}/tasks/install"
 
-- name: "Create the buildbot user account"
-  become: yes
-  user:
-    state: present
-    name: "{{ buildbot_worker_user }}"
-    group: "{{ buildbot_worker_group | d(omit) }}"
-  register: _buildbot_worker_adduser
-
-- name: "Get the buildbot user primary group"
-  set_fact:
-    buildbot_worker_group: "{{ _buildbot_worker_adduser.group }}"
-  when: buildbot_worker_group is undefined
-
-- name: "Create buildbot base directory"
-  become: yes
-  file:
-    state: directory
-    path: "{{ buildbot_worker_basedir }}"
-    owner: "{{ buildbot_worker_user }}"
-    group: "{{ buildbot_worker_group }}"
-    mode: "0755"
-
-- name: "Create buildbot worker"
-  become: yes
-  become_method: sudo
-  become_user: buildbot
-  command:
-    cmd: >
-      {{ buildbot_worker_bin }} create-worker {{ buildbot_worker_basedir }}
-      {{ buildbot_master_host }}:{{ buildbot_master_port }}
-      {{ buildbot_worker_name }} {{ buildbot_worker_password }}
-    creates: "{{ buildbot_worker_basedir }}/buildbot.tac"
-  notify: "Restart service"
-
-- name: "Update buildbot worker configuration"
-  become: yes
-  become_method: sudo
-  become_user: buildbot
-  lineinfile:
-    path: "{{ buildbot_worker_basedir }}/buildbot.tac"
-    regexp: "^{{ item.key }} ="
-    line: "{{ item.key }} = {{ item.value }}"
-  with_dict:
-    buildmaster_host: "'{{ buildbot_master_host }}'"
-    basedir: "'{{ buildbot_worker_basedir }}'"
-    port: "{{ buildbot_master_port }}"
-    workername: "'{{ buildbot_worker_name }}'"
-    passwd: "'{{ buildbot_worker_password }}'"
-  loop_control:
-    label: "key: {{ item.key }}, value: {{ (item.key == 'passwd') | ternary('********', item.value) }}"
-  notify: "Restart service"
-
-- name: "Create buildbot worker info directory."
-  become: yes
-  file:
-    state: directory
-    path: "{{ buildbot_worker_basedir }}/info"
-    owner: "{{ buildbot_worker_user }}"
-    group: "{{ buildbot_worker_group }}"
-    mode: "0755"
-
-- name: "Update buildbot worker info files."
-  become: yes
-  template:
-    src: "info-{{ info_item }}.j2"
-    dest: "{{ buildbot_worker_basedir }}/info/{{ info_item }}"
-    owner: "{{ buildbot_worker_user }}"
-    group: "{{ buildbot_worker_group }}"
-    mode: "0644"
-  loop:
-    - "host"
-    - "admin"
-    - "access_uri"
-  loop_control:
-    loop_var: info_item
-  notify: "Restart service"
-
-- name: "Include OS specific service tasks"
+- name: "Stage 2: Create buildbot user account."
   include_tasks: "{{ item }}"
   with_first_found:
-    - "service/{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
-    - "service/{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
-    - "service/{{ ansible_distribution | replace(' ', '_') }}.yaml"
-    - "service/{{ ansible_os_family | replace(' ', '_') }}.yaml"
-    - "unknown.yaml"
+    - files:
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
+        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
+        - "default.yaml"
+      paths:
+        - "{{ role_path }}/tasks/user"
+
+- name: "Stage 3: Configure buildbot-worker instance."
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
+        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
+        - "default.yaml"
+      paths:
+        - "{{ role_path }}/tasks/setup"
+
+- name: "Stage 4: Setup buildbot-worker service."
+  include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
+        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
+        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
+        - "default.yaml"
+      paths:
+        - "{{ role_path }}/tasks/service"
