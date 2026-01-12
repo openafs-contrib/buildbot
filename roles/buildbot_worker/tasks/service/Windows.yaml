@@ -1,0 +1,54 @@
+---
+# The ansible_user must be a member of the Administrtors group in order
+# to setup the Windows service.  The BuildBot user is a regular user.
+
+- name: "Windows: Grant 'Log on as a service' right to the BuildBot user."
+  ansible.windows.win_user_right:
+    name: SeServiceLogonRight
+    users:
+      - "{{ buildbot_worker_user }}"
+    action: add
+
+- name: "Windows: Check if the BuildBot service is installed."
+  ansible.windows.win_service:
+    name: BuildBot
+  register: service_info_results
+  failed_when: false
+
+- debug: var=service_info_results
+
+- name: "Windows: Install the BuildBot service."
+  vars:
+    buildbot_worker_windows_service: "{{ buildbot_worker_python | dirname }}/Scripts/buildbot_worker_windows_service.exe"
+  ansible.windows.win_command: >
+    "{{ buildbot_worker_windows_service }}"
+    --username ".\\{{ buildbot_worker_user }}"
+    --password "{{ buildbot_worker_user_password }}"
+    install
+  args:
+    chdir: "{{ buildbot_worker_basedir }}"
+  register: service_install_results
+  failed_when: service_install_results.rc != 0
+  when: not service_info_results.exists
+  notify: "Restart buildbot-worker"
+
+- name: "Windows: Configure BuildBot Service Parameters in Registry."
+  ansible.windows.win_regedit:
+    state: present
+    path: HKLM:\SYSTEM\CurrentControlSet\Services\BuildBot\Parameters
+    name: directories
+    data: "{{ buildbot_worker_basedir }}"
+  register: service_config_results
+  notify: "Restart buildbot-worker"
+
+# The handler will start or restart the service if we just created service or
+# updated the config.  This task will ensure the service is running when no
+# changes were made.
+- name: "Windows: Ensure BuildBot service is started."
+  ansible.windows.win_service:
+    name: BuildBot
+    start_mode: auto
+    state: started
+  when:
+    - not service_install_results.changed
+    - not service_config_results.changed

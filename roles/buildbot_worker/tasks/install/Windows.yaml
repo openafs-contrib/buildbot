@@ -1,0 +1,51 @@
+---
+# The ansible_user must be a member of the Administrators group in order to
+# create the buildbot user.
+
+- name: "Windows: Create the BuildBot user."
+  ansible.windows.win_user:
+    name: "{{ buildbot_worker_user }}"
+    password: "{{ buildbot_worker_user_password }}"
+    state: present
+    groups:
+      - Users
+    groups_action: replace
+    password_never_expires: yes
+
+- name: "Windows: Create buildbot worker directory."
+  ansible.windows.win_file:
+    path: "{{ buildbot_worker_basedir }}"
+    state: directory
+
+- name: "Windows: Set NTFS FullControl for worker directory."
+  ansible.windows.win_acl:
+    user: "{{ buildbot_worker_user }}"
+    path: "{{ buildbot_worker_basedir }}"
+    rights: FullControl
+    type: allow
+    state: present
+    inherit: ContainerInherit, ObjectInherit
+
+- name: "Windows: Check installed python packages."
+  ansible.windows.win_command: >
+    "{{ buildbot_worker_python }}" -m pip list
+  register: pip_list_results
+  changed_when: false
+
+- name: "Windows: Install pywin32 python package."
+  ansible.windows.win_command: >
+    "{{ buildbot_worker_python }}" -m pip install pywin32
+  register: pip_install_pywin32
+  when: "'pywin32' not in pip_list_results.stdout"
+
+- name: "Windows: Run pywin32 post-installation script to register COM objects."
+  vars:
+    scripts: "{{ buildbot_worker_python | dirname }}/Scripts"
+  ansible.windows.win_command: >
+    "{{ buildbot_worker_python }}" "{{ scripts }}"/pywin32_postinstall.py -install
+  when: pip_install_pywin32.changed
+
+- name: "Windows: Install buildbot-worker."
+  ansible.windows.win_command: >
+    "{{ buildbot_worker_python }}" -m pip install buildbot-worker
+  when: "'buildbot-worker' not in pip_list_results.stdout"

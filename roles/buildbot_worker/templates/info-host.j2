@@ -1,4 +1,4 @@
 {{ buildbot_worker_host_info | d("") }}
-{{ ansible_distribution }}
-{{ ansible_distribution_version }}
-{{ ansible_machine }}
+{{ ansible_distribution | d("") }}
+{{ ansible_distribution_version | d("") }}
+{{ ansible_machine | d("") }}
