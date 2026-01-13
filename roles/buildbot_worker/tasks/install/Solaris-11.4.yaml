@@ -49,11 +49,3 @@
   environment:
     PKG_CONFIG_PATH: /usr/lib/64/pkgconfig
   tags: root
-
-- name: "Solaris 11.4: Create buildbot-worker symlink."
-  become: yes
-  file:
-    state: link
-    src: /opt/buildbot-worker/bin/buildbot-worker
-    path: "{{ buildbot_worker_bin }}"
-  tags: root
