@@ -18,7 +18,7 @@
       {{ buildbot_master_host }}:{{ buildbot_master_port }}
       {{ buildbot_worker_name }} {{ buildbot_worker_password }}
     creates: "{{ buildbot_worker_basedir }}/buildbot.tac"
-  notify: "Restart service"
+  notify: "Restart buildbot-worker"
 
 - name: "Update buildbot worker configuration"
   become: yes
@@ -37,7 +37,7 @@
   loop_control:
     loop_var: config_item
     label: "key: {{ config_item.key }}, value: {{ (config_item.key == 'passwd') | ternary('********', config_item.value) }}"
-  notify: "Restart service"
+  notify: "Restart buildbot-worker"
 
 - name: "Create buildbot worker info directory."
   become: yes
@@ -62,4 +62,4 @@
     - "access_uri"
   loop_control:
     loop_var: info_item
-  notify: "Restart service"
+  notify: "Restart buildbot-worker"

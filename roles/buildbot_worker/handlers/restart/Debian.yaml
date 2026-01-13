@@ -1,0 +1,8 @@
+---
+- name: "Debian: Restart buildbot-worker systemd service."
+  become: yes
+  ansible.builtin.systemd:
+    name: "buildbot-worker@{{ buildbot_project }}"
+    state: restarted
+    enabled: yes
+    daemon_reload: "{{ buildbot_worker_settings_results.changed | d(False) }}"

@@ -2,23 +2,19 @@
 # Legacy init.d settings file.
 - name: "Debian: Install buildbot worker settings"
   become: yes
-  template:
+  ansible.builtin.template:
     src: buildbot-worker.debian.j2
     dest: /etc/default/buildbot-worker
     owner: root
     group: root
     mode: 0644
-  tags: root
-
-# Note: The debian unit file is parameterized with the project name.
-- name: "Debian: Set service name"
-  set_fact:
-    buildbot_worker_service: buildbot-worker@{{ buildbot_project }}
+  register: buildbot_worker_settings_results
+  notify: "Restart buildbot-worker"
 
 - name: "Debian: Start buildbot worker service"
   become: yes
-  systemd:
-    name: "{{ buildbot_worker_service }}"
+  ansible.builtin.systemd:
+    name: "buildbot-worker@{{ buildbot_project }}"
     enabled: yes
     state: started
-  tags: root
+  when: not buildbot_worker_settings_results.changed

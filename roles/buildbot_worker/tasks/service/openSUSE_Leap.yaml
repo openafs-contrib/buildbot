@@ -1,24 +1,22 @@
 ---
-- name: "openSUSE: Install buildbot worker systemd unit file"
+- name: "openSUSE: Update buildbot-worker systemd unit file."
   become: yes
-  template:
+  ansible.builtin.template:
     src: buildbot-worker.service.j2
     dest: /etc/systemd/system/buildbot-worker.service
     owner: root
     group: root
     mode: 0644
-  notify: "Restart service"
-  tags: root
+  register: buildbot_worker_unit_file_results
+  notify: "Restart buildbot-worker"
 
-- name: "openSUSE: Set service name"
-  set_fact:
-    buildbot_worker_service: buildbot-worker
-
-- name: "openSUSE: Start buildbot worker service"
+- name: "openSUSE: Ensure the buildbot-worker service is running."
+  # The handler will start the service when the unit file was changed.
+  # This task is skipped when the unit file is changed to avoid a
+  # double startup bounce.
   become: yes
-  systemd:
+  ansible.builtin.systemd:
     name: "{{ buildbot_worker_service }}"
-    daemon_reload: yes
     enabled: yes
     state: started
-  tags: root
+  when: not buildbot_worker_unit_file_results.changed

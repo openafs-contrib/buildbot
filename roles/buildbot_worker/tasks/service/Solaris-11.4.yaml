@@ -25,10 +25,6 @@
   register: buildbot_worker_manifest
   tags: root
 
-- name: "Solaris 11.4: Set service name"
-  set_fact:
-    buildbot_worker_service: buildbot-worker
-
 # This also enables and starts the smf service.
 - name: "Solaris 11.4: Import SMF manifest"
   become: yes

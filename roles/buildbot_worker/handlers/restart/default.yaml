@@ -1,0 +1,6 @@
+---
+- name: "Restart buildbot-worker service."
+  become: yes
+  ansible.builtin.service:
+    name: "{{ buildbot_worker_service }}"
+    state: restarted

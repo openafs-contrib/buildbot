@@ -1,0 +1,4 @@
+---
+- name: "MacOSX: Launchd not implemented."
+  debug:
+    msg: "Please manually configure launchd to start the buildbot-worker."

@@ -9,10 +9,6 @@
     mode: 0644
   tags: root
 
-- name: "CentOS: Set service name"
-  set_fact:
-    buildbot_worker_service: buildbot-worker
-
 - name: "CentOS: Start buildbot worker service"
   become: yes
   systemd:

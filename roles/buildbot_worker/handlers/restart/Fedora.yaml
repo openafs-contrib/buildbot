@@ -1,0 +1,8 @@
+---
+- name: "Fedora: Restart buildbot-worker systemd service."
+  become: yes
+  ansible.builtin.systemd:
+    name: "{{ buildbot_worker_service }}"
+    state: restarted
+    enabled: yes
+    daemon_reload: "{{ buildbot_worker_unit_file_results.changed | d(False) }}"
