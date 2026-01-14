@@ -1,0 +1,21 @@
+---
+
+# Avoid spaces in path names.
+__buildbot_worker_distro_slug: "{{ ansible_distribution | replace(' ', '_') }}"
+
+# Create windows or unix categories.
+__buildbot_worker_os_category_map:
+  Win32NT: "Windows"
+
+# This os is either "Windows" or "Unix".
+__buildbot_worker_os_category: "{{ __buildbot_worker_os_category_map[ansible_system] | default('Unix') }}"
+
+# Specific versions override more general.
+__buildbot_worker_os_search_list:
+  - "{{ __buildbot_worker_distro_slug }}-{{ ansible_distribution_version }}.yaml"
+  - "{{ __buildbot_worker_distro_slug }}-{{ ansible_distribution_major_version }}.yaml"
+  - "{{ __buildbot_worker_distro_slug }}.yaml"
+  - "{{ ansible_os_family }}.yaml"
+  - "{{ ansible_system }}.yaml"
+  - "{{ __buildbot_worker_os_category }}.yaml"
+  - "__default__.yaml"

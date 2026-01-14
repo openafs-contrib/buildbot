@@ -1,10 +1,6 @@
 ---
-#
-# Install and update buildbot workers.
-#
-
-- name: "Buildbot worker variable checks."
-  assert:
+- name: "Buildbot worker required variables check."
+  ansible.builtin.assert:
     that:
       - buildbot_project is defined
       - buildbot_master_host is defined
@@ -14,67 +10,36 @@
       - buildbot_worker_password is defined
       - buildbot_worker_password | length > 0
 
-- debug: var=ansible_distribution_version
-- debug: var=ansible_distribution_major_version
-- debug: var=ansible_distribution
-- debug: var=ansible_os_family
+- name: "Trace OS search list."
+  debug:
+    var: __buildbot_worker_os_search_list
 
 - name: "Set OS specific variables"
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - files:
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
-        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
-        - "defaults.yaml"
-      paths:
-        - "{{ role_path }}/vars"
+    - files: "{{ __buildbot_worker_os_search_list }}"
+      paths: "{{ role_path }}/vars/os"
 
 - name: "Stage 1: Install buildbot-worker package."
-  include_tasks: "{{ item }}"
+  ansible.builtin.include_tasks: "{{ item }}"
   with_first_found:
-    - files:
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
-        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
-        - "default.yaml"
-      paths:
-        - "{{ role_path }}/tasks/install"
+    - files: "{{ __buildbot_worker_os_search_list }}"
+      paths: "{{ role_path }}/tasks/install"
 
 - name: "Stage 2: Create buildbot user account."
-  include_tasks: "{{ item }}"
+  ansible.builtin.include_tasks: "{{ item }}"
   with_first_found:
-    - files:
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
-        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
-        - "default.yaml"
-      paths:
-        - "{{ role_path }}/tasks/user"
+    - files: "{{ __buildbot_worker_os_search_list }}"
+      paths: "{{ role_path }}/tasks/user"
 
 - name: "Stage 3: Configure buildbot-worker instance."
-  include_tasks: "{{ item }}"
+  ansible.builtin.include_tasks: "{{ item }}"
   with_first_found:
-    - files:
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
-        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
-        - "default.yaml"
-      paths:
-        - "{{ role_path }}/tasks/setup"
+    - files: "{{ __buildbot_worker_os_search_list }}"
+      paths: "{{ role_path }}/tasks/setup"
 
 - name: "Stage 4: Setup buildbot-worker service."
-  include_tasks: "{{ item }}"
+  ansible.builtin.include_tasks: "{{ item }}"
   with_first_found:
-    - files:
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}-{{ ansible_distribution_major_version }}.yaml"
-        - "{{ ansible_distribution | replace(' ', '_') }}.yaml"
-        - "{{ ansible_os_family | replace(' ', '_') }}.yaml"
-        - "default.yaml"
-      paths:
-        - "{{ role_path }}/tasks/service"
+    - files: "{{ __buildbot_worker_os_search_list }}"
+      paths: "{{ role_path }}/tasks/service"
