@@ -3,5 +3,5 @@
   become: yes
   apt:
     state: present
-    name: buildbot-worker
+    name: python3-buildbot-worker
   tags: root
