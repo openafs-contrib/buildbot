@@ -6,14 +6,20 @@
     dest: /Library/LaunchDaemons/net.buildbot.worker.plist
     owner: root
     group: wheel
-    mode: "0664"
+    mode: "0644"
+  notify: "Restart buildbot-worker"
+  tags: root
+
+- name: "MacOSX: Check buildbot worker launch daemon"
+  become: true
+  command: launchctl print system/net.buildbot.worker
+  register: buildbot_worker_launchd_print
+  changed_when: false
+  failed_when: false
   tags: root
 
 - name: "MacOSX: Launch buildbot worker"
   become: true
-  community.general.launchd:
-    name: net.buildbot.worker
-    state: started
+  command: launchctl bootstrap system /Library/LaunchDaemons/net.buildbot.worker.plist
+  when: buildbot_worker_launchd_print.rc != 0
   tags: root
-  # Skip until launchctl errno 5 errors are fixed.
-  when: false

@@ -13,16 +13,15 @@
 
          <key>ProgramArguments</key>
          <array>
-                 <string>{{ buildbot_worker_bin }}</string>
-                 <string>start</string>
-                 <string>--nodaemon</string>
-                 <string>{{ buildbot_worker_basedir }}</string>
+{% for arg in buildbot_worker_launchd_program_arguments %}
+                 <string>{{ arg }}</string>
+{% endfor %}
          </array>
 
          <key>EnvironmentVariables</key>
          <dict>
                  <key>PATH</key>
-                 <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+                 <string>/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
                  <key>ARCHFLAGS</key>
                  <string>-arch x86_64 -arch arm64</string>
          </dict>

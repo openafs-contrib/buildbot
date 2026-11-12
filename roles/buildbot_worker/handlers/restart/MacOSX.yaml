@@ -1,4 +1,14 @@
 ---
-- name: "MacOSX: Launchd not implemented."
-  debug:
-    msg: "Please manually configure launchd to start the buildbot-worker."
+- name: "MacOSX: Unload buildbot worker launch daemon"
+  become: true
+  command: launchctl bootout system/net.buildbot.worker
+  failed_when: false
+
+# Retry, since bootstrap fails with errno 5 until the bootout completes.
+- name: "MacOSX: Load buildbot worker launch daemon"
+  become: true
+  command: launchctl bootstrap system /Library/LaunchDaemons/net.buildbot.worker.plist
+  register: buildbot_worker_launchd_bootstrap
+  until: buildbot_worker_launchd_bootstrap.rc == 0
+  retries: 5
+  delay: 2

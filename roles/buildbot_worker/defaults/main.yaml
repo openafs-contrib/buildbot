@@ -6,3 +6,10 @@ buildbot_master_host: localhost
 
 # Buildbot master port number.
 buildbot_master_port: 9989
+
+# macOS: Command run by the launch daemon to start the worker.
+buildbot_worker_launchd_program_arguments:
+  - "{{ buildbot_worker_bin }}"
+  - start
+  - --nodaemon
+  - "{{ buildbot_worker_basedir }}"
