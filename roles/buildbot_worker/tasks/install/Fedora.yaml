@@ -1,19 +1,29 @@
 ---
-# The c compiler is required to build the twisted modules.
+# The c compiler and python headers are required to build modules
+# which do not have binary wheels available.
 - name: "Fedora: Install python3 and gcc"
   become: yes
   yum:
     state: present
     name:
      - python3
+     - python3-devel
      - make
      - gcc
   tags: root
 
+# Avoid the ansible pip module, since older versions of it require
+# pkg_resources, which has been removed from recent setuptools releases.
+- name: "Fedora: Create python virtual env"
+  become: yes
+  command:
+    cmd: /usr/bin/python3 -m venv /opt/buildbot-worker
+    creates: /opt/buildbot-worker/bin/pip
+  tags: root
+
 - name: "Fedora: Install buildbot worker"
   become: yes
-  pip:
-    name: buildbot-worker
-    virtualenv: /opt/buildbot-worker
-    virtualenv_command: /usr/bin/python3 -m venv
+  command:
+    cmd: /opt/buildbot-worker/bin/pip install buildbot-worker
+    creates: "{{ buildbot_worker_bin }}"
   tags: root
