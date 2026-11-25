@@ -1,7 +1,7 @@
 ---
 - name: "openSUSE: Restart buildbot-worker systemd service."
   become: yes
-  ansible.builtin.systemd_service:
+  ansible.builtin.systemd:
     name: "{{ buildbot_worker_service }}"
     state: restarted
     enabled: yes
