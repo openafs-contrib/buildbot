@@ -13,3 +13,8 @@ buildbot_worker_launchd_program_arguments:
   - start
   - --nodaemon
   - "{{ buildbot_worker_basedir }}"
+
+# Windows: PATH directories.
+# buildbot_worker_path:
+#  - 'C:\Program Files\Git\cmd'
+#  - 'C:\Windows\System32'

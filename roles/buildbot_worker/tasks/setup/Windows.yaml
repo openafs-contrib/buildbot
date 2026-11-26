@@ -1,13 +1,14 @@
 ---
-- name: "Windows: Create buildbot worker."
-  vars:
-    buildbot_worker_bin: "{{ buildbot_worker_python | dirname }}/Scripts/buildbot-worker.exe"
-  ansible.windows.win_command: >
-    "{{ buildbot_worker_bin }}" create-worker "{{ buildbot_worker_basedir }}"
-    {{ buildbot_master_host }}:{{ buildbot_master_port }}
-    {{ buildbot_worker_name }} {{ buildbot_worker_password }}
-  register: create_worker_results
-  changed_when: '"buildbot.tac already exists and is correct" not in create_worker_results.stdout | d("")'
+- name: "Windows: Create buildbot base directory."
+  ansible.windows.win_file:
+    path: "{{ buildbot_worker_basedir }}"
+    state: directory
+
+- name: "Windows: Create buildbot worker configuration."
+  ansible.windows.win_template:
+    src: windows-buildbot.tac.j2
+    dest: "{{ buildbot_worker_basedir }}/buildbot.tac"
+    newline_sequence: "\r\n"
   notify: "Restart buildbot-worker"
 
 - name: "Windows: Create buildbot worker info directory."
